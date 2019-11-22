@@ -36,6 +36,10 @@ class Dropzone extends React.Component {
   constructor(props){ 
     super(props);
     this.fileInputRef = React.createRef();
+    openFileDialog = function() {
+      if (this.props.disabled) return;
+      this.fileInputRef.current.click();
+    }
   }
 
   render() {
