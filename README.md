@@ -1,3 +1,4 @@
-# Tic-Tac-Toe
+### Dog or Cat!?
 
-Simply for learning the basics of React, following [this](https://reactjs.org/tutorial/tutorial.html) brilliant tutorial!
+I created a front-end in React that allows you to upload an image. 
+The idea is that I'd pass the file to a Neural Network image recognition function that I built using a tutorial. 
