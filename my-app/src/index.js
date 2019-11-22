@@ -33,14 +33,15 @@ class Upload extends React.Component {
 }
 
 class Dropzone extends React.Component {
+  openFileDialog() {
+    if (this.props.disabled) return;
+    this.fileInputRef.current.click();
+  };
   constructor(props){ 
-    super(props);
-    this.fileInputRef = React.createRef();
-    openFileDialog = function() {
-      if (this.props.disabled) return;
-      this.fileInputRef.current.click();
-    }
-  }
+    super(props)
+    this.fileInputRef = React.createRef()
+    
+  };
 
   render() {
     return(
