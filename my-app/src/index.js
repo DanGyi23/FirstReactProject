@@ -32,6 +32,33 @@ class Upload extends React.Component {
   }
 }
 
+class Dropzone extends React.Component {
+  constructor(props){ 
+    super(props);
+    this.fileInputRef = React.createRef();
+  }
+
+  render() {
+    return(
+      <div className="Dropzone">
+        <img
+          alt="upload"
+          className="Icon"
+          src="baseline-cloud_upload-24px.svg"
+        />
+        <input
+          ref={this.fileInputRef}
+          className="FileInput"
+          type="file"
+          multiple
+          onChange={this.onFilesAdded}
+        />
+        <span>Upload Files</span>
+      </div>
+    )
+  }
+}
+
 
 ReactDOM.render(
   <Form />,
