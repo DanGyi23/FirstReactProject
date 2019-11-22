@@ -21,7 +21,7 @@ class Upload extends React.Component {
   render() {
     return ( 
     <div className="Upload">
-      <span className="Title">Upload Files</span>
+      <span className="Title">Upload Your Cat or Dog Photo</span>
       <div className="Content">
         <div />
         <div className="Files" />
