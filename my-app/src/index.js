@@ -20,6 +20,101 @@ class Upload extends React.Component {
       files: prevState.files.concat(files)
     }));
   }
+
+  renderProgress(file) {
+    const uploadProgress = this.state.uploadProgress[file.name];
+    if (this.state.uploading || this.state.successfullUploaded) {
+      return (
+        <div className="ProgressWrapper">
+          <Progress progress={uploadProgress ? uploadProgress.percentage : 0} />
+          <img
+            className="CheckIcon"
+            alt="done"
+            src="https://cdns.iconmonstr.com/wp-content/assets/preview/2012/240/iconmonstr-check-mark-1.png"
+            style={{
+              opacity:
+                uploadProgress && uploadProgress.state === "done" ? 0.5 : 0
+            }}
+          />
+        </div>
+      );
+    }
+  };
+
+  renderActions() {
+    if (this.state.successfullUploaded) {
+      return (
+        <button
+          onClick={() =>
+            this.setState({ files: [], successfullUploaded: false })
+          }
+        >
+          Clear
+      </button>
+      );
+    } else {
+      return (
+        <button
+          disabled={this.state.files.length < 0 || this.state.uploading}
+          onClick={this.uploadFiles}
+        >
+          Upload
+      </button>
+      );
+    }
+  }
+
+  async uploadFiles() {
+    this.setState({ uploadProgress: {}, uploading: true });
+    const promises = [];
+    this.state.files.forEach(file => {
+      promises.push(this.sendRequest(file));
+    });
+    try {
+      await Promise.all(promises);
+
+      this.setState({ successfullUploaded: true, uploading: false });
+    } catch (e) {
+      this.setState({ successfullUploaded: true, uploading: false });
+    }
+  }
+
+  sendRequest(file) {
+    return new Promise((resolve, reject) => {
+      const req = new XMLHttpRequest();
+
+      req.upload.addEventListener("progress", event => {
+        if (event.lengthComputable) {
+          const copy = { ...this.state.uploadProgress };
+          copy[file.name] = {
+            state: "pending",
+            percentage: (event.loaded / event.total) * 100
+          };
+          this.setState({ uploadProgress: copy });
+        }
+      });
+
+      req.upload.addEventListener("load", event => {
+        const copy = { ...this.state.uploadProgress };
+        copy[file.name] = { state: "done", percentage: 100 };
+        this.setState({ uploadProgress: copy });
+        resolve(req.response);
+      });
+
+      req.upload.addEventListener("error", event => {
+        const copy = { ...this.state.uploadProgress };
+        copy[file.name] = { state: "error", percentage: 0 };
+        this.setState({ uploadProgress: copy });
+        reject(req.response);
+      });
+
+      const formData = new FormData();
+      formData.append("file", file, file.name);
+
+      req.open("POST", "http://localhost:3000/upload");
+      req.send(formData);
+    });
+  }
   
   constructor(props) {
     super(props)
@@ -37,7 +132,7 @@ class Upload extends React.Component {
   render() {
     return (
       <div className="Upload">
-        <span className="Title">Upload Your Cat or Dog Photo</span>
+        <span className="Title">Upload your Dog or Cat Image Here!</span>
         <div className="Content">
           <div>
             <Dropzone
@@ -56,7 +151,8 @@ class Upload extends React.Component {
             })}
           </div>
         </div>
-        <div className="Actions">{this.renderActions()}</div>
+        <div className="Actions"> {this.renderActions()}
+        </div>
       </div>
     );
   };
@@ -130,7 +226,7 @@ class Dropzone extends React.Component {
         <img
           alt="upload"
           className="Icon"
-          src="baseline-cloud_upload-24px.svg"
+          src="https://cdn4.iconfinder.com/data/icons/misc-vol-6/512/cat-dog-animals-pet-pets-domestics-512.png"
         />
         <input
           ref={this.fileInputRef}
@@ -139,7 +235,24 @@ class Dropzone extends React.Component {
           multiple
           onChange={this.onFilesAdded}
         />
-        <span>Upload Files</span>
+        <span>Drag & Drop/Click</span>
+      </div>
+    )
+  }
+}
+
+class Progress extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
+  render() {
+    return (
+      <div className="ProgressBar">
+        <div
+          className="Progress"
+          style={{ width: this.props.progress + '%' }}
+        />
       </div>
     )
   }
